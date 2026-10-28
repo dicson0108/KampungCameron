@@ -22,11 +22,8 @@ class RecipeController {
     }
 
     public function show(string|int $slugOrId): void {
-        if (is_numeric($slugOrId)) {
-            $recipe = DB::fetch("SELECT * FROM recipes WHERE id = :val AND is_published = 1", ['val' => (int)$slugOrId]);
-        } else {
-            $recipe = DB::fetch("SELECT * FROM recipes WHERE slug = :val AND is_published = 1", ['val' => $slugOrId]);
-        }
+        $column = is_numeric($slugOrId) ? 'id' : 'slug';
+        $recipe = DB::fetch("SELECT * FROM recipes WHERE $column = :val AND is_published = 1", ['val' => $column === 'id' ? (int)$slugOrId : $slugOrId]);
 
         if (!$recipe) {
             http_response_code(404);

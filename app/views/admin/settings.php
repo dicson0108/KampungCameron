@@ -9,12 +9,7 @@
     <form action="<?= url('/admin/settings/save') ?>" method="POST">
         <?= csrf_field() ?>
 
-        <?php 
-        $settingsMap = [];
-        foreach ($settings as $s) {
-            $settingsMap[$s['setting_key']] = $s;
-        }
-        ?>
+        <?php $settingsMap = array_column($settings, null, 'setting_key'); ?>
 
         <div style="display:flex; flex-direction:column; gap:1.5rem;">
             <!-- Store Identity -->

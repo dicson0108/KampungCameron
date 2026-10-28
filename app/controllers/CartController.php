@@ -143,7 +143,6 @@ class CartController {
         header('Content-Type: application/json');
         $cart = get_active_cart();
         $items = get_cart_items($cart['id']);
-        $totals = calculate_cart_totals($items, $cart['promo_code_id'] ?? null);
 
         foreach ($items as &$it) {
             $it['name'] = trans($it, 'name');
@@ -156,10 +155,7 @@ class CartController {
         echo json_encode([
             'items'       => $items,
             'count'       => get_cart_count(),
-            'subtotal'    => format_currency($totals['subtotal']),
-            'total'       => format_currency($totals['total']),
-            'cart_url'    => url('/cart'),
-            'checkout_url'=> url('/checkout')
+            'subtotal'    => format_currency(array_sum(array_column($items, 'line_total')))
         ]);
         exit;
     }

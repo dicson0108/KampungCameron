@@ -87,17 +87,6 @@ CREATE TABLE IF NOT EXISTS `products` (
     INDEX `idx_prod_stock` (`stock_quantity`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tier specific fixed prices (optional override per product)
-CREATE TABLE IF NOT EXISTS `tier_product_prices` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `tier_id` INT NOT NULL,
-    `product_id` INT NOT NULL,
-    `fixed_price` DECIMAL(10,2) NOT NULL,
-    UNIQUE KEY `uk_tier_prod` (`tier_id`, `product_id`),
-    FOREIGN KEY (`tier_id`) REFERENCES `pricing_tiers`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 -- Wholesale Accounts (B2B business verification)
 CREATE TABLE IF NOT EXISTS `wholesale_accounts` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,

@@ -8,6 +8,8 @@ require APP_PATH . '/helpers/i18n.php';
 require APP_PATH . '/helpers/view.php';
 require APP_PATH . '/controllers/AdminController.php';
 require APP_PATH . '/controllers/WholesaleController.php';
+require APP_PATH . '/controllers/ProductController.php';
+require APP_PATH . '/controllers/RecipeController.php';
 set_error_handler(fn($n, $s, $f, $l) => throw new ErrorException($s, 0, $n, $f, $l));
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $pdo = DB::connect();
@@ -40,6 +42,18 @@ try {
         if (getenv('PORTAL_PREVIEW_DIR')) file_put_contents(getenv('PORTAL_PREVIEW_DIR') . '/' . $method . '.html', str_replace(asset(''), 'http://localhost:8001/assets/', $html));
         $count++;
     }
+    foreach ([['products', new ProductController()], ['recipes', new RecipeController()]] as [$table, $controller]) {
+        $row = DB::fetch("SELECT id, slug FROM $table WHERE " . ($table === 'products' ? 'is_active' : 'is_published') . ' = 1 ORDER BY id LIMIT 1');
+        if (!$row) throw new RuntimeException("Need a local $table fixture.");
+        $pages = [];
+        foreach ([$row['id'], $row['slug']] as $identifier) {
+            ob_start();
+            $controller->show($identifier);
+            $pages[] = ob_get_clean();
+            $count++;
+        }
+        if ($pages[0] !== $pages[1]) throw new RuntimeException("$table ID and slug must render identically.");
+    }
     $user = DB::fetch("SELECT u.* FROM users u JOIN wholesale_accounts wa ON wa.user_id = u.id WHERE wa.status = 'approved' LIMIT 1");
     if (!$user) throw new RuntimeException('Need an approved wholesale fixture.');
     login_user($user);
@@ -57,4 +71,4 @@ try {
 } finally {
     if ($pdo->inTransaction()) $pdo->rollBack();
 }
-echo "$count admin/wholesale pages rendered without warnings. Transaction rolled back.\n";
+echo "$count pages rendered without warnings. Transaction rolled back.\n";

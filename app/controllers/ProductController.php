@@ -2,23 +2,14 @@
 
 class ProductController {
     public function show(string|int $slugOrId): void {
-        if (is_numeric($slugOrId)) {
-            $product = DB::fetch(
-                "SELECT p.*, c.name_en as category_name_en, c.name_zh as category_name_zh, c.slug as category_slug
-                 FROM products p
-                 JOIN categories c ON p.category_id = c.id
-                 WHERE p.id = :val AND p.is_active = 1",
-                ['val' => (int)$slugOrId]
-            );
-        } else {
-            $product = DB::fetch(
-                "SELECT p.*, c.name_en as category_name_en, c.name_zh as category_name_zh, c.slug as category_slug
-                 FROM products p
-                 JOIN categories c ON p.category_id = c.id
-                 WHERE p.slug = :val AND p.is_active = 1",
-                ['val' => $slugOrId]
-            );
-        }
+        $column = is_numeric($slugOrId) ? 'id' : 'slug';
+        $product = DB::fetch(
+            "SELECT p.*, c.name_en as category_name_en, c.name_zh as category_name_zh, c.slug as category_slug
+             FROM products p
+             JOIN categories c ON p.category_id = c.id
+             WHERE p.$column = :val AND p.is_active = 1",
+            ['val' => $column === 'id' ? (int)$slugOrId : $slugOrId]
+        );
 
         if (!$product) {
             http_response_code(404);

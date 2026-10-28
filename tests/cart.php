@@ -144,4 +144,11 @@ foreach (['', '/', '/shop', '///shop', '/shop/'] as $path) {
     check(url($path) === BASE_URL . '/' . ltrim($path, '/'), 'Base URL and slash handling');
 }
 
-echo "Cart money calculations, guest/user carts, single-page rendering, navigation, and bilingual stock cards passed.\n";
+ob_start();
+register_shutdown_function(function () {
+    $payload = json_decode(ob_get_clean(), true, flags: JSON_THROW_ON_ERROR);
+    check($payload['count'] === 5 && $payload['subtotal'] === 'RM 36.66', 'Mini-cart count and subtotal must match its items');
+    check(count($payload['items']) === 2 && $payload['items'][0]['formatted_total'] === 'RM 30.00', 'Mini-cart must retain its display fields');
+    echo "Cart calculations, guest/user carts, page rendering, navigation, bilingual cards, and mini-cart payload passed.\n";
+});
+(new CartController())->miniCart();

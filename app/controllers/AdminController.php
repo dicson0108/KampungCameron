@@ -485,8 +485,7 @@ class AdminController {
 
     public function pricingTiers(): void {
         $tiers = DB::fetchAll("SELECT * FROM pricing_tiers ORDER BY discount_percent ASC");
-        $editTier = null;
-        foreach ($tiers as $tier) if ($tier['id'] === (int)($_GET['id'] ?? 0)) $editTier = $tier;
+        $editTier = array_column($tiers, null, 'id')[(int)($_GET['id'] ?? 0)] ?? null;
         render_view('admin/pricing_tiers', ['tiers' => $tiers, 'editTier' => $editTier, 'title' => 'B2B Pricing Tiers'], 'admin');
     }
 

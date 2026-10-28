@@ -98,12 +98,10 @@ $GLOBALS['kc_translations'] = [
 
         // Shop & Catalogue
         'filter_all'            => 'All categories',
-        'sort_by'               => 'Sort by',
         'sort_popular'          => 'Popularity',
         'sort_newest'           => 'Newest',
         'sort_price_low'        => 'Price: Low to High',
         'sort_price_high'       => 'Price: High to Low',
-        'filter_availability'   => 'Availability',
         'in_stock_only'         => 'In stock only',
         'no_products_found'     => 'No products found matching your search.',
         'clear_filters'         => 'Clear all filters',
@@ -128,7 +126,6 @@ $GLOBALS['kc_translations'] = [
         'apply'                 => 'Apply',
         'discount'              => 'Discount',
         'shipping'              => 'Flat shipping',
-        'delivery_details'      => 'Delivery details',
         'saved_address'         => 'Saved address',
         'full_name'             => 'Full name',
         'email_address'         => 'Email',
@@ -151,25 +148,8 @@ $GLOBALS['kc_translations'] = [
         'ws_hero_desc'          => 'Plan the week with tier-based prices, scheduled supply and fresh produce your team can count on.',
         'ws_apply_btn'          => 'Apply for a wholesale account',
         'ws_whatsapp_btn'       => 'Chat on WhatsApp',
-        'ws_dashboard'          => 'Wholesale dashboard',
-        'ws_bulk_catalog'       => 'Bulk catalogue',
-        'ws_quick_order'        => 'Quick order',
-        'ws_standing_orders'    => 'Standing orders',
-        'ws_orders'             => 'Wholesale orders',
-        'ws_invoices'           => 'Invoices',
-        'ws_tier_badge'         => 'Tier %s Account',
-        'ws_add_product'        => '+ Add product',
-        'ws_save_schedule'      => 'Save schedule',
-        'ws_pause_schedule'     => 'Pause schedule',
-        'ws_cancel_standing'    => 'Cancel standing order',
 
         // Account
-        'account_dashboard'     => 'Dashboard',
-        'account_orders'        => 'Order history',
-        'account_addresses'     => 'Addresses',
-        'account_profile'       => 'Profile & password',
-        'account_wishlist'      => 'Wishlist',
-        'account_reviews'       => 'My reviews',
         'login'                 => 'Log in',
         'register'              => 'Register',
         'logout'                => 'Log out',
@@ -177,7 +157,6 @@ $GLOBALS['kc_translations'] = [
         // Flash & System
         'msg_login_required'    => 'Please log in to continue.',
         'msg_access_denied'     => 'Access denied.',
-        'msg_order_success'     => 'Your order has been placed successfully.',
     ],
 
     'zh' => [
@@ -241,12 +220,10 @@ $GLOBALS['kc_translations'] = [
 
         // Shop & Catalogue
         'filter_all'            => '全部分类',
-        'sort_by'               => '排序方式',
         'sort_popular'          => '热销排行',
         'sort_newest'           => '最新上架',
         'sort_price_low'        => '价格：从低到高',
         'sort_price_high'       => '价格：从高到低',
-        'filter_availability'   => '供货状态',
         'in_stock_only'         => '仅显示有货',
         'no_products_found'     => '抱歉，没有找到匹配的蔬菜食材。',
         'clear_filters'         => '清除筛选条件',
@@ -271,7 +248,6 @@ $GLOBALS['kc_translations'] = [
         'apply'                 => '使用',
         'discount'              => '优惠折扣',
         'shipping'              => '标准运费',
-        'delivery_details'      => '配送详情',
         'saved_address'         => '常用地址',
         'full_name'             => '姓名',
         'email_address'         => '电子邮箱',
@@ -294,25 +270,8 @@ $GLOBALS['kc_translations'] = [
         'ws_hero_desc'          => '专为餐饮团队打造：阶梯批发特惠、每周定期排期、高山直供新鲜保障。',
         'ws_apply_btn'          => '申请批发采购账户',
         'ws_whatsapp_btn'       => 'WhatsApp 咨询',
-        'ws_dashboard'          => '批发主页',
-        'ws_bulk_catalog'       => '批量商品名录',
-        'ws_quick_order'        => '快速批量下单',
-        'ws_standing_orders'    => '定期配送订单',
-        'ws_orders'             => '批发历史订单',
-        'ws_invoices'           => '发票单据',
-        'ws_tier_badge'         => '%s 级批发伙伴',
-        'ws_add_product'        => '+ 添加商品',
-        'ws_save_schedule'      => '保存配送计划',
-        'ws_pause_schedule'     => '暂停计划',
-        'ws_cancel_standing'    => '取消计划',
 
         // Account
-        'account_dashboard'     => '账户概览',
-        'account_orders'        => '历史订单',
-        'account_addresses'     => '收货地址',
-        'account_profile'       => '个人资料与密码',
-        'account_wishlist'      => '心愿单',
-        'account_reviews'       => '我的评价',
         'login'                 => '登录',
         'register'              => '注册',
         'logout'                => '退出登录',
@@ -320,7 +279,6 @@ $GLOBALS['kc_translations'] = [
         // Flash & System
         'msg_login_required'    => '请先登录您的账户。',
         'msg_access_denied'     => '权限不足，无法访问该页面。',
-        'msg_order_success'     => '恭喜，您的订单已成功生成。',
     ]
 ];
 

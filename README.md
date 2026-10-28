@@ -114,13 +114,13 @@ These checks cover cart pricing and totals, guest/user cart selection, page rend
 
 Portal regression checks also cover wholesale approvals, current tier/session state, bulk cart quantities, schedule ownership and rollback, CSRF protection, cancelled-order handling, and invalid prices/discounts/shipping fees.
 
-To render admin and wholesale pages against your configured local database (requires an admin and an approved wholesale account):
+To render admin, wholesale, product, and recipe pages against your configured local database (requires an admin and an approved wholesale account):
 
 ```sh
 php tests/portal-pages.php --live
 ```
 
-This opt-in check rolls back its database transaction. Standing orders save schedules only; they do not automatically create orders.
+This opt-in check also verifies that product and recipe IDs and slugs render identical pages, then rolls back its database transaction. Standing orders save schedules only; they do not automatically create orders.
 
 ## License
 
