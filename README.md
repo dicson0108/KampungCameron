@@ -1,123 +1,116 @@
-# Kampung Cameron — E-Commerce Web Application
+# Kampung Cameron — Frontend Refinement
 
-A modern, bilingual e-commerce platform bridging Cameron Highlands fresh produce growers directly to retail households and B2B culinary businesses. Built with native PHP 8, MariaDB, and a custom Apple-inspired minimalist design system adhering to the 78-screen UI/UX specification.
+A refined version of the current Kampung Cameron website, introducing **blue as a secondary brand color** alongside the familiar green and improving the frontend across the storefront, customer accounts, wholesale portal, and administration screens.
 
----
+The visual direction keeps the fresh-produce identity of Cameron Highlands while giving the website clearer layouts, more consistent components, and a more comfortable experience on desktop and mobile.
 
-## 🌿 Key Features
+## Design direction
 
-### 1. Retail Direct (B2C)
-- **Live Search & Autocomplete**: Instant search overlay for produce and recipe ideas with debounce handling.
-- **Bilingual Interface**: Seamless instant toggle between English (`EN`) and Simplified Chinese (`中文`).
-- **Interactive Cart & Mini-Drawer**: Slide-over cart preview, dynamic quantity steppers, and promo code support (e.g. `FRESH10`).
-- **High-Integrity Checkout**: Database row locks (`SELECT ... FOR UPDATE`) in ACID transactions prevent negative inventory.
-- **Recipe-to-Cart Engine**: One-click "Add all ingredients to basket" linking highland recipes directly to fresh harvest inventory.
-- **Customer Account Suite**: Order history tracking, address book manager, product review submissions, and personal wishlist.
+| Color | Value | Role |
+|---|---|---|
+| Highland Green | `#256045` | Primary actions, brand accents, and selected states |
+| Service Blue | `#184E68` | Secondary brand color for wholesale navigation, service areas, and the footer |
+| Warm Paper | `#FAF8F5` | Main page background |
+| White | `#FFFFFF` | Cards, forms, and foreground surfaces |
 
-### 2. Wholesale Portal (B2B)
-- **SSM Business Verification**: Corporate registration workflow for cafés, grocers, and restaurants.
-- **Dynamic Tiered Pricing**: Automated tier discounts (Tier A: 15%, Tier B: 20%, Tier C: 25%) computed live across catalogue.
-- **Matrix Quick Order**: Rapid bulk-order sheet allowing multi-product SKU entry with real-time total updates.
-- **Standing Recurring Orders**: Automated recurring order schedules with preferred delivery day intervals.
-- **Corporate Invoicing**: Printable, tax-compliant invoice generator (`/admin/orders/invoice?id={id}`).
+The interface combines Lora headings with system and DM Sans interface typography, plus Noto Sans SC for Chinese text. Shared CSS variables keep colors, spacing, corner radii, shadows, and motion consistent.
 
-### 3. Back-Office Administration
-- **KPI Command Center**: Today's revenue, order volume, pending applications, and low-stock alert notifications.
-- **Catalog & Inventory Engine**: Full CRUD for products/categories with SKU tracking, safety thresholds, and audit logging (`stock_log`).
-- **Stock Safeguard**: Cancelling an order automatically replenishes inventory and writes audit logs.
-- **B2B Application Management**: One-click approval/rejection with tier assignment.
-- **Business Reporting & Ledgers**: Channel revenue breakdown (retail vs wholesale) and 1-click CSV exports for sales and inventory.
-- **Store Configuration**: Live control over flat shipping rates, contacts, and checkout payment gateway options.
+## Frontend refinements
 
----
+- **Green and blue visual identity:** blue complements the primary green and gives wholesale and service sections a distinct presence.
+- **Clearer page hierarchy:** refined typography, spacing, cards, forms, and navigation across the main website areas.
+- **Responsive navigation:** desktop navigation and a mobile slide-over menu, with layouts that adapt to smaller screens.
+- **Smoother shopping interactions:** live search suggestions, a mini-cart drawer, wishlist controls, and a floating back-to-top button.
+- **Consistent branding:** updated logo placement, favicons, social icons, and payment-method artwork.
+- **Shared components:** reusable product cards and account/wholesale navigation keep repeated screens consistent.
+- **Accessibility details:** visible keyboard focus, labeled controls, and reduced-motion preferences.
 
-## 🛠️ Architecture & Tech Stack
+## Website areas
 
-- **Runtime**: PHP 8.2+ (No heavy third-party runtime frameworks; clean MVC architecture).
-- **Database**: MariaDB / MySQL 10.4+ with PDO singleton wrapper.
-- **Frontend**: Vanilla ES6+ JavaScript, CSS3 variables, tactile Apple-inspired micro-interactions (`scale(0.97)`).
-- **Typography & Aesthetics**: Lora Serif + DM Sans, Highland Green (`#2D6A4F`), Service Blue (`#184E68`), Warm Paper (`#FBF9F5`).
+| Area | Included functionality |
+|---|---|
+| Retail storefront | Product browsing and search, categories, cart, promo codes, checkout, and recipe ingredients added to cart |
+| Customer accounts | Sign-in, registration, profiles, saved addresses, order history, wishlists, and reviews |
+| Wholesale portal | Business applications, approval and pricing tiers, bulk catalogue, quick ordering, standing-order schedule management, and printable invoices |
+| Administration | Products, categories, inventory and stock logs, orders, wholesale applications, promotions, reviews, recipes, reports, and settings |
 
----
+English and Simplified Chinese are supported through translated interface strings and bilingual content fields.
 
-## 🚀 Setup & Installation (XAMPP)
+Checkout records the selected payment method; it does not process online payments. Standing orders currently provide schedule management; automatic recurring-order generation is not implemented in this checkout.
 
-### Prerequisites
-1. [XAMPP](https://www.apachefriends.org/) with **Apache** and **MySQL / MariaDB** running.
-2. PHP 8.1+ enabled in environment.
+## Technology
 
-### 1. Database Setup
-1. Launch **MySQL** via XAMPP Control Panel.
-2. Open terminal and run:
-```bash
-# Create database and tables
-mysql -u root < database/schema.sql
+- **Backend:** native PHP with server-rendered views and controller-based routing.
+- **Database:** MariaDB or MySQL, accessed through PDO.
+- **Frontend:** HTML, custom CSS, and vanilla JavaScript.
+- **Local development:** XAMPP or PHP's built-in development server.
 
-# Seed initial products, tiers, accounts, and demo orders
-mysql -u root < database/seed.sql
+## Run locally
+
+### 1. Prepare the environment
+
+Use PHP 8.2 or later with PDO MySQL and mbstring enabled, plus a running MariaDB/MySQL server. XAMPP provides the local web server, PHP, and database tools.
+
+Update the database connection values in `config/config.php` for your environment. The included local defaults use database `kampung_cameron` on `127.0.0.1:3306`.
+
+### 2. Import the database
+
+From the project root, open the MySQL client:
+
+```sh
+mysql -u root
 ```
 
-### 2. Web Server Configuration
+Then run these commands inside the client:
 
-#### Option A: Run directly on `localhost:8001` (Recommended)
-Open a terminal in the project root folder and run:
-```bash
+```sql
+SOURCE database/schema.sql;
+SOURCE database/seed.sql;
+```
+
+The seed includes demonstration products, recipes, pricing tiers, accounts, and orders.
+
+### 3. Start the website
+
+From the project root:
+
+```sh
 php -S localhost:8001 router.php
 ```
-The application will be live at:
-- **Direct Localhost URL**: `http://localhost:8001`
 
-#### Option B: Apache via XAMPP
-Create a directory junction in your XAMPP `htdocs` folder:
-```powershell
-cmd /c mklink /J "C:\xampp\htdocs\kampungcameron" "C:\path\to\KampungCameron"
-```
-Accessible at: `http://localhost/kampungcameron/public/`
+Open [localhost:8001](http://localhost:8001).
 
----
+For Apache/XAMPP, place the project under `htdocs`, enable URL rewriting, and open its folder URL, such as `http://localhost/KampungCameron/`.
 
-## 🔐 Seed Accounts & Credentials
-
-| Role | Email | Password | Access Highlights |
-|---|---|---|---|
-| **Administrator** | `admin@kampungcameron.com` | `Admin@123` | Full back-office dashboard, inventory, orders, wholesale approvals, CSV reports |
-| **Wholesale Account** | `kitchen@greentable.com` | `Wholesale@123` | B2B catalog with tier discounts, quick order matrix, standing weekly orders |
-| **Retail Customer** | `aisha@example.com` | `Customer@123` | B2C storefront, cart, order history, address book, wishlist |
-
----
-
-## 📂 Project Directory Structure
+## Project structure
 
 ```text
-KampungCameron/
-├── app/
-│   ├── controllers/         # MVC Controllers (Shop, Cart, Wholesale, Admin, etc.)
-│   ├── helpers/             # auth.php, i18n.php, view.php
-│   └── views/               # Presentation templates
-│       ├── layouts/         # main.php (Storefront), admin.php (Back-office)
-│       ├── shop/            # Catalog, detail, cart, checkout, confirmation
-│       ├── wholesale/       # Landing, apply, catalog, quick-order, standing-orders
-│       ├── account/         # Customer profile, orders, addresses, wishlist
-│       ├── recipes/         # Highland recipe cards & ingredient integration
-│       ├── admin/           # Dashboard, products, inventory, orders, reports, settings
-│       └── pages/           # About, contact, legal, policy, and 404
-├── config/
-│   ├── config.php           # Base URL auto-detection, paths, DB credentials
-│   └── db.php               # PDO singleton database connection
-├── database/
-│   ├── schema.sql           # Complete 21-table MariaDB schema
-│   └── seed.sql             # Demo catalogue, users, tiers, and orders
-├── public/                  # Document root
-│   ├── index.php            # Front controller & central request router
-│   ├── .htaccess            # Apache URL rewrite rules
-│   └── assets/
-│       ├── css/             # style.css (Storefront), admin.css (Admin UI)
-│       ├── js/              # main.js (Search, Mini-Cart, AJAX interactions)
-│       └── images/          # Produce, banners, and recipe assets
-└── README.md                # Project documentation
+app/
+  controllers/       Request handling and database operations
+  helpers/           Authentication, translations, views, and cart calculations
+  views/             Storefront, account, wholesale, recipe, and admin templates
+config/              Application configuration and PDO database helper
+database/           Schema and demonstration data
+public/
+  assets/css/        Storefront and admin styles
+  assets/js/         Shared frontend interactions
+  assets/images/     Branding, produce, recipes, and interface artwork
+  index.php          Front controller and route table
+tests/               Focused PHP and JavaScript checks
+router.php           PHP development-server router
 ```
 
----
+## Checks
 
-## 📄 License
-Kampung Cameron E-Commerce Platform. All rights reserved.
+With PHP and Node.js available:
+
+```sh
+php tests/cart.php
+node tests/back-to-top.cjs
+```
+
+These checks cover cart pricing and totals, guest/user cart selection, page rendering, shared navigation, bilingual product cards, and back-to-top behavior. The PHP checks use in-memory data and do not connect to the live database.
+
+## License
+
+Kampung Cameron. All rights reserved.
