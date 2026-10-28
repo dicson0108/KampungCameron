@@ -3,7 +3,7 @@
 <div class="container" style="padding-bottom: 60px;">
     <div style="margin-bottom: 28px;">
         <span class="badge" style="background: #eef6f9; color: var(--service-blue-dark); font-size: 12px; padding: 4px 10px; margin-bottom: 8px;">
-            <?= strtoupper(htmlspecialchars($wsAccount['tier_name'] ?? 'Tier A')) ?> (<?= number_format($wsAccount['discount_percent'] ?? 15, 0) ?>% DISCOUNT APPLIED)
+            <?= strtoupper(htmlspecialchars($wsAccount['tier_name'] ?? 'Standard Pricing')) ?> (<?= number_format($wsAccount['discount_percent'] ?? 0, 0) ?>% DISCOUNT APPLIED)
         </span>
         <h1 style="font-size: 34px;">Quick Order Sheet</h1>
         <p style="color: var(--text-muted); font-size: 14px;">Enter quantities for items required. Orders are checked against daily fresh harvest stock.</p>
@@ -12,7 +12,8 @@
     <form id="wholesale-quick-order-form" action="<?= url('/wholesale/quick-order/submit') ?>" method="POST">
         <?= csrf_field() ?>
 
-        <div style="background: var(--surface-white); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 24px;">
+        <div style="background: var(--surface-white); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 24px;">
+            <div class="portal-table-scroll" role="region" aria-label="Quick order quantities" tabindex="0">
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
                 <thead>
                     <tr style="background: var(--warm-paper); border-bottom: 1px solid var(--border-color);">
@@ -46,21 +47,23 @@
                                 </span>
                             </td>
                             <td style="padding: 14px 20px; text-align: center;">
-                                <input type="number" name="items[<?= $p['id'] ?>]" class="form-input quick-order-qty" min="0" max="<?= $p['stock_quantity'] ?>" value="0" style="width: 80px; text-align: center; padding: 6px;">
+                                <input type="number" name="items[<?= $p['id'] ?>]" aria-label="<?= e($p['name_en']) ?> packs to add" class="form-input quick-order-qty" min="0" max="<?= $p['stock_quantity'] ?>" step="1" value="0" style="width: 80px; text-align: center; padding: 6px;">
                             </td>
                             <td style="padding: 14px 20px; text-align: right; font-weight: 700;" class="quick-order-line-total">
                                 RM 0.00
                             </td>
                         </tr>
                     <?php endforeach; ?>
+                    <?php if (!$products): ?><tr><td colspan="6" style="padding: 24px;">No produce available. Please check back for the next harvest.</td></tr><?php endif; ?>
                 </tbody>
             </table>
+            </div>
 
             <!-- Bottom Floating Action Bar -->
-            <div style="padding: 20px 24px; background: var(--warm-paper); display: flex; justify-content: space-between; align-items: center;">
+            <div class="portal-actions" style="padding: 20px 24px; background: var(--warm-paper); justify-content: space-between;">
                 <div>
                     <span style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Estimated Produce Subtotal:</span>
-                    <span id="quick-order-grand-total" style="font-size: 22px; font-weight: 700; color: var(--primary-green); margin-left: 8px;">RM 0.00</span>
+                    <span id="quick-order-grand-total" aria-live="polite" style="font-size: 22px; font-weight: 700; color: var(--primary-green); margin-left: 8px;">RM 0.00</span>
                 </div>
                 <button type="submit" class="btn btn-primary btn-lg">Add to Cart & Checkout →</button>
             </div>

@@ -16,23 +16,23 @@
 </div>
 
 <!-- Revenue Split Cards -->
-<div class="admin-kpi-grid" style="margin-bottom: 2rem;">
-    <div class="admin-kpi-card">
-        <span class="admin-kpi-label">Gross Revenue (Excl. Cancelled)</span>
-        <div class="admin-kpi-val" style="color:var(--c-primary);">RM <?= number_format($totalSales, 2) ?></div>
-        <span class="admin-kpi-sub">Total lifetime transactions</span>
+<div class="kpi-grid" style="margin-bottom: 2rem;">
+    <div class="kpi-card">
+        <span class="kpi-label">Gross Revenue (Excl. Cancelled)</span>
+        <div class="kpi-value" style="color:var(--primary-green);">RM <?= number_format($totalSales, 2) ?></div>
+        <span class="kpi-sub">Total lifetime transactions</span>
     </div>
-    <div class="admin-kpi-card">
-        <span class="admin-kpi-label">Retail Direct Revenue</span>
-        <div class="admin-kpi-val">RM <?= number_format($totalRetail, 2) ?></div>
-        <span class="admin-kpi-sub">
+    <div class="kpi-card">
+        <span class="kpi-label">Retail Direct Revenue</span>
+        <div class="kpi-value">RM <?= number_format($totalRetail, 2) ?></div>
+        <span class="kpi-sub">
             <?= $totalSales > 0 ? number_format(($totalRetail / $totalSales) * 100, 1) : 0 ?>% of total revenue
         </span>
     </div>
-    <div class="admin-kpi-card">
-        <span class="admin-kpi-label">Wholesale B2B Revenue</span>
-        <div class="admin-kpi-val" style="color:var(--c-accent);">RM <?= number_format($totalWholesale, 2) ?></div>
-        <span class="admin-kpi-sub">
+    <div class="kpi-card">
+        <span class="kpi-label">Wholesale B2B Revenue</span>
+        <div class="kpi-value" style="color:var(--service-blue);">RM <?= number_format($totalWholesale, 2) ?></div>
+        <span class="kpi-sub">
             <?= $totalSales > 0 ? number_format(($totalWholesale / $totalSales) * 100, 1) : 0 ?>% of total revenue
         </span>
     </div>
@@ -42,10 +42,10 @@
 <div class="admin-card">
     <div class="admin-card-header">
         <h3 style="margin:0;">Top 10 Best-Selling Products</h3>
-        <span style="font-size:0.8rem; color:var(--c-ink-muted);">By units fulfilled</span>
+        <span style="font-size:0.8rem; color:var(--admin-text-muted);">By units fulfilled</span>
     </div>
     <div class="admin-table-wrap">
-        <table class="admin-table">
+        <div class="admin-table-scroll" role="region" aria-label="Reports data table" tabindex="0"><table class="admin-table">
             <thead>
                 <tr>
                     <th>Rank</th>
@@ -56,18 +56,18 @@
             </thead>
             <tbody>
                 <?php if (empty($bestSellers)): ?>
-                    <tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--c-ink-muted);">No sales data available yet.</td></tr>
+                    <tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--admin-text-muted);">No sales data available yet.</td></tr>
                 <?php else: ?>
                     <?php foreach ($bestSellers as $idx => $item): ?>
                         <tr>
                             <td><strong>#<?= $idx + 1 ?></strong></td>
                             <td><strong><?= e($item['name_en']) ?></strong></td>
                             <td style="text-align:right; font-weight:600;"><?= number_format($item['total_qty']) ?></td>
-                            <td style="text-align:right; font-weight:700; color:var(--c-primary);">RM <?= number_format($item['total_revenue'], 2) ?></td>
+                            <td style="text-align:right; font-weight:700; color:var(--primary-green);">RM <?= number_format($item['total_revenue'], 2) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>

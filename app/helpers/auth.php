@@ -26,6 +26,8 @@ function is_wholesale(): bool {
 }
 
 function login_user(array $user): void {
+    session_regenerate_id(true);
+    unset($_SESSION['wholesale']);
     $_SESSION['user'] = [
         'id'    => (int)$user['id'],
         'name'  => $user['name'],
@@ -78,5 +80,25 @@ function csrf_field(): string {
 
 function verify_csrf(): bool {
     $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-    return !empty($token) && hash_equals($_SESSION['csrf_token'] ?? '', $token);
+    return is_string($token) && $token !== '' && hash_equals($_SESSION['csrf_token'] ?? '', $token);
+}
+
+function require_csrf(string $path): void {
+    if (!verify_csrf()) {
+        set_flash('error', 'Session expired. Reload the form and try again.');
+        redirect($path);
+    }
+}
+
+// Reload approval and tier changes before pricing or authorizing a request.
+function refresh_wholesale_session(): void {
+    if (!is_logged_in() || is_admin()) return;
+    $account = DB::fetch(
+        "SELECT wa.*, pt.code as tier_code, pt.name as tier_name, pt.discount_percent
+         FROM wholesale_accounts wa LEFT JOIN pricing_tiers pt ON pt.id = wa.tier_id
+         WHERE wa.user_id = :uid", ['uid' => auth_id()]
+    );
+    unset($_SESSION['wholesale']);
+    $_SESSION['user']['role'] = $account && $account['status'] === 'approved' ? 'wholesale' : 'customer';
+    if ($account && $account['status'] === 'approved') $_SESSION['wholesale'] = $account;
 }

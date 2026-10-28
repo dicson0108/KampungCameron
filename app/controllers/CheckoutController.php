@@ -45,7 +45,12 @@ class CheckoutController {
         $state       = trim($_POST['state'] ?? '');
         $postcode    = trim($_POST['postcode'] ?? '');
         $notes       = trim($_POST['delivery_notes'] ?? '');
-        $paymentMethod = $_POST['payment_method'] ?? 'fpx';
+        $paymentMethod = $_POST['payment_method'] ?? '';
+
+        if (!is_string($paymentMethod) || !array_key_exists($paymentMethod, get_checkout_payment_methods())) {
+            set_flash('error', 'Choose an available payment method. Reload checkout if the available options have changed.');
+            redirect('/checkout');
+        }
 
         if (empty($fullName) || empty($email) || empty($phone) || empty($address1) || empty($city) || empty($state) || empty($postcode)) {
             set_flash('error', 'Please fill in all required delivery details.');

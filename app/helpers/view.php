@@ -69,6 +69,12 @@ function get_setting(string $key, string $default = ''): string {
     return $settings[$key] ?? $default;
 }
 
+function get_checkout_payment_methods(): array {
+    $labels = ['fpx' => 'FPX online banking', 'card' => 'Credit / debit card — Visa, Mastercard', 'grabpay' => 'GrabPay', 'tng' => 'Touch ’n Go eWallet', 'cod' => 'Cash on delivery'];
+    $enabled = array_flip(array_map('trim', explode(',', get_setting('enabled_payment_methods', implode(',', array_keys($labels))))));
+    return array_intersect_key($labels, $enabled);
+}
+
 function get_cart_count(): int {
     $cart = get_active_cart();
     if (!$cart) return 0;

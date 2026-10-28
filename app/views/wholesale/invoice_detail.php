@@ -50,7 +50,7 @@
         </div>
         <div>
             <h4 style="margin-bottom: 6px; text-transform: uppercase; font-size: 12px; color: #64748b;">Supply Terms:</h4>
-            <div>Wholesale Pricing Tier: <strong><?= htmlspecialchars($wsAccount['tier_name'] ?? 'Tier A') ?> (<?= $wsAccount['discount_percent'] ?? 15 ?>% off)</strong></div>
+            <div>Wholesale Pricing Tier: <strong><?= htmlspecialchars($wsAccount['tier_name'] ?? 'Standard Pricing') ?> (<?= $wsAccount['discount_percent'] ?? 0 ?>% off)</strong></div>
             <div>Payment Channel: <strong><?= strtoupper(htmlspecialchars($order['payment_method'])) ?></strong></div>
             <div>Notes: <?= htmlspecialchars($order['delivery_notes'] ?: 'None') ?></div>
         </div>

@@ -4,14 +4,14 @@
     <!-- Tier Badge & Title -->
     <div style="margin-bottom: 28px;">
         <span class="badge" style="background: #eef6f9; color: var(--service-blue-dark); font-size: 12px; padding: 4px 10px; margin-bottom: 8px;">
-            APPROVED ACCOUNT · <?= strtoupper(htmlspecialchars($wsAccount['tier_name'] ?? 'Tier A')) ?> (<?= number_format($wsAccount['discount_percent'] ?? 15, 0) ?>% OFF)
+            APPROVED ACCOUNT · <?= strtoupper(htmlspecialchars($wsAccount['tier_name'] ?? 'Standard Pricing')) ?> (<?= number_format($wsAccount['discount_percent'] ?? 0, 0) ?>% OFF)
         </span>
         <h1 style="font-size: 34px;"><?= htmlspecialchars($wsAccount['business_name']) ?></h1>
         <p style="color: var(--text-muted); font-size: 14px;">Business Reg: <?= htmlspecialchars($wsAccount['registration_number']) ?> · Contact: <?= htmlspecialchars($wsAccount['contact_person']) ?></p>
     </div>
 
     <!-- Quick Action Cards -->
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 20px; margin-bottom: 40px;">
         <div style="background: var(--surface-white); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px;">
             <h3 style="font-size: 18px; margin-bottom: 6px;">Quick Bulk Order</h3>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Key in multi-item quantities for fast order dispatch.</p>
@@ -49,7 +49,7 @@
                 No previous orders. Place your first bulk order with the quick order form!
             </div>
         <?php else: ?>
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+            <div class="portal-table-scroll" role="region" aria-label="Dashboard" tabindex="0"><table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
                 <thead>
                     <tr style="background: var(--warm-paper); border-bottom: 1px solid var(--border-color);">
                         <th style="padding: 12px 20px;">Order #</th>
@@ -69,12 +69,12 @@
                                 <span class="badge badge-in-stock"><?= ucfirst(htmlspecialchars($ord['status'])) ?></span>
                             </td>
                             <td style="padding: 14px 20px; text-align: right;">
-                                <a href="<?= url('/wholesale/invoice/' . $ord['id']) ?>" target="_blank" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">View PDF</a>
+                                <a href="<?= url('/wholesale/invoice/' . $ord['id']) ?>" target="_blank" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">View Invoice</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
-            </table>
+            </table></div>
         <?php endif; ?>
     </div>
 </div>

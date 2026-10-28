@@ -4,7 +4,7 @@
     <h1 style="font-size: 34px; margin-bottom: 24px;">Wholesale Orders History</h1>
 
     <div style="background: var(--surface-white); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+        <div class="portal-table-scroll" role="region" aria-label="Orders" tabindex="0"><table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
             <thead>
                 <tr style="background: var(--warm-paper); border-bottom: 1px solid var(--border-color);">
                     <th style="padding: 14px 20px;">Order #</th>
@@ -31,12 +31,12 @@
                                 <span class="badge badge-in-stock"><?= ucfirst(htmlspecialchars($o['status'])) ?></span>
                             </td>
                             <td style="padding: 14px 20px; text-align: right;">
-                                <a href="<?= url('/wholesale/invoice/' . $o['id']) ?>" target="_blank" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">Invoice PDF</a>
+                                <a href="<?= url('/wholesale/invoice/' . $o['id']) ?>" target="_blank" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">View Invoice</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>

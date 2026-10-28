@@ -3,7 +3,7 @@
 <div class="container" style="padding-bottom: 60px;">
     <div style="margin-bottom: 28px;">
         <span class="badge" style="background: #eef6f9; color: var(--service-blue-dark); font-size: 12px; padding: 4px 10px; margin-bottom: 8px;">
-            <?= strtoupper(htmlspecialchars($wsAccount['tier_name'] ?? 'Tier A')) ?> (<?= number_format($wsAccount['discount_percent'] ?? 15, 0) ?>% TIER DISCOUNT)
+            <?= strtoupper(htmlspecialchars($wsAccount['tier_name'] ?? 'Standard Pricing')) ?> (<?= number_format($wsAccount['discount_percent'] ?? 0, 0) ?>% TIER DISCOUNT)
         </span>
         <h1 style="font-size: 34px;">Bulk Produce Catalogue</h1>
         <p style="color: var(--text-muted); font-size: 14px;">Highland wholesale prices for scheduled hospitality kitchens.</p>
@@ -42,8 +42,8 @@
                         <form action="<?= url('/cart/add') ?>" method="POST" data-ajax-cart>
                             <?= csrf_field() ?>
                             <input type="hidden" name="product_id" value="<?= $prod['id'] ?>">
-                            <input type="hidden" name="quantity" value="5">
-                            <button type="submit" class="btn btn-primary btn-block">+ Add 5 packs</button>
+                            <input type="hidden" name="quantity" value="<?= min(5, (int)$prod['stock_quantity']) ?>">
+                            <button type="submit" class="btn btn-primary btn-block">+ Add <?= min(5, (int)$prod['stock_quantity']) ?> packs</button>
                         </form>
                     <?php else: ?>
                         <button type="button" class="btn btn-secondary btn-block" disabled>Sold out</button>

@@ -23,8 +23,8 @@
             <?= csrf_field() ?>
 
             <div class="form-group">
-                <label class="form-label">Administrator Email</label>
-                <input type="email" name="email" class="form-input" value="admin@kampungcameron.com" required>
+                <label class="form-label" for="login-email">Administrator Email</label>
+                    <input id="login-email" type="email" name="email" class="form-input" value="admin@kampungcameron.com" required>
             </div>
 
             <div class="form-group">

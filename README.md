@@ -106,10 +106,21 @@ With PHP and Node.js available:
 
 ```sh
 php tests/cart.php
+php tests/portals.php
 node tests/back-to-top.cjs
 ```
 
 These checks cover cart pricing and totals, guest/user cart selection, page rendering, shared navigation, bilingual product cards, and back-to-top behavior. The PHP checks use in-memory data and do not connect to the live database.
+
+Portal regression checks also cover wholesale approvals, current tier/session state, bulk cart quantities, schedule ownership and rollback, CSRF protection, cancelled-order handling, and invalid prices/discounts/shipping fees.
+
+To render admin and wholesale pages against your configured local database (requires an admin and an approved wholesale account):
+
+```sh
+php tests/portal-pages.php --live
+```
+
+This opt-in check rolls back its database transaction. Standing orders save schedules only; they do not automatically create orders.
 
 ## License
 

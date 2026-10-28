@@ -8,7 +8,7 @@
     </div>
 
     <div class="admin-card">
-        <table class="admin-table">
+        <div class="admin-table-scroll" role="region" aria-label="Standing Orders data table" tabindex="0"><table class="admin-table">
             <thead>
                 <tr>
                     <th>Schedule Name</th>
@@ -41,6 +41,6 @@
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>

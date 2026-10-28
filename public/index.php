@@ -7,6 +7,8 @@ require_once __DIR__ . '/../app/helpers/auth.php';
 require_once __DIR__ . '/../app/helpers/i18n.php';
 require_once __DIR__ . '/../app/helpers/view.php';
 
+refresh_wholesale_session();
+
 // Auto-load controllers
 spl_autoload_register(function ($class) {
     $file = APP_PATH . '/controllers/' . $class . '.php';

@@ -13,8 +13,8 @@
             <?= csrf_field() ?>
 
             <div style="flex: 1; min-width: 200px;">
-                <label class="form-label">Select Produce</label>
-                <select name="product_id" class="form-select">
+                <label class="form-label" for="inventory-product_id">Select Produce</label>
+                    <select id="inventory-product_id" name="product_id" class="form-select">
                     <?php foreach ($products as $p): ?>
                         <option value="<?= $p['id'] ?>">
                             <?= htmlspecialchars($p['name_en']) ?> (Current: <?= $p['stock_quantity'] ?>)
@@ -24,13 +24,13 @@
             </div>
 
             <div style="width: 140px;">
-                <label class="form-label">Qty Change (+/-)</label>
-                <input type="number" name="change_quantity" class="form-input" placeholder="+20 or -5" required>
+                <label class="form-label" for="inventory-change_quantity">Qty Change (+/-)</label>
+                    <input id="inventory-change_quantity" type="number" name="change_quantity" class="form-input" placeholder="+20 or -5" required>
             </div>
 
             <div style="flex: 1; min-width: 180px;">
-                <label class="form-label">Reason</label>
-                <select name="reason" class="form-select">
+                <label class="form-label" for="inventory-reason">Reason</label>
+                    <select id="inventory-reason" name="reason" class="form-select">
                     <option value="morning_harvest_restock">Morning highland harvest</option>
                     <option value="manual_stock_count">Manual audit count</option>
                     <option value="damaged_spoilage">Damaged / culled</option>
@@ -47,7 +47,7 @@
         <div class="admin-card-header">
             <h3>Current Stock Levels</h3>
         </div>
-        <table class="admin-table">
+        <div class="admin-table-scroll" role="region" aria-label="Inventory data table" tabindex="0"><table class="admin-table">
             <thead>
                 <tr>
                     <th>Product</th>
@@ -76,7 +76,7 @@
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-        </table>
+        </table></div>
     </div>
 
     <!-- Stock Audit Log Table per FR-36 -->
@@ -84,7 +84,7 @@
         <div class="admin-card-header">
             <h3>Stock Change Log (Audit Trail)</h3>
         </div>
-        <table class="admin-table">
+        <div class="admin-table-scroll" role="region" aria-label="Inventory data table" tabindex="0"><table class="admin-table">
             <thead>
                 <tr>
                     <th>Timestamp</th>
@@ -109,6 +109,6 @@
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>

@@ -14,7 +14,7 @@ class DB {
 
     public static function fetchAll(string $sql, array $params = []): array {
         if (str_contains($sql, 'FROM settings')) {
-            return [['setting_key' => 'flat_shipping_fee', 'setting_value' => '8.00']];
+            return [['setting_key' => 'flat_shipping_fee', 'setting_value' => '8.00'], ['setting_key' => 'enabled_payment_methods', 'setting_value' => 'cod']];
         }
         if (str_contains($sql, 'JOIN products')) {
             return array_map(fn($item) => $item + [
@@ -90,6 +90,9 @@ foreach ([new CartController(), new CheckoutController()] as $controller) {
     check(substr_count($html, '<!DOCTYPE html>') === 1, 'Exactly one page must render');
     check(str_contains($html, 'RM 36.04'), 'Page totals must agree with wholesale cart plus promotion and shipping');
 }
+
+check(str_contains($html, 'value="cod" checked'), 'First enabled payment method must be selected');
+check(!str_contains($html, 'value="fpx"'), 'Disabled payment method must not render');
 
 foreach (['dashboard', 'catalog', 'quick-order', 'standing-orders', 'orders', 'invoices'] as $activeWholesaleTab) {
     ob_start();

@@ -9,12 +9,12 @@
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+    <div class="admin-order-layout">
         <!-- Left: Items & Customer Details -->
         <div>
             <div class="admin-card" style="padding: 24px; margin-bottom: 24px;">
                 <h3 style="font-size: 18px; margin-bottom: 16px;">Produce Line Items</h3>
-                <table class="admin-table">
+                <div class="admin-table-scroll" role="region" aria-label="Order Detail data table" tabindex="0"><table class="admin-table">
                     <thead>
                         <tr>
                             <th>Item</th>
@@ -35,7 +35,7 @@
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
-                </table>
+                </table></div>
 
                 <div style="max-width: 280px; margin-left: auto; margin-top: 20px; font-size: 14px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
@@ -82,8 +82,8 @@
                     <input type="hidden" name="id" value="<?= $order['id'] ?>">
 
                     <div class="form-group">
-                        <label class="form-label">Current Fulfillment Status</label>
-                        <select name="status" class="form-select">
+                        <label class="form-label" for="order_detail-status">Current Fulfillment Status</label>
+                    <select id="order_detail-status" name="status" class="form-select">
                             <option value="pending" <?= $order['status'] === 'pending' ? 'selected' : '' ?>>Pending Review</option>
                             <option value="processing" <?= $order['status'] === 'processing' ? 'selected' : '' ?>>Processing / Packing Cold</option>
                             <option value="out_for_delivery" <?= $order['status'] === 'out_for_delivery' ? 'selected' : '' ?>>Out for Delivery</option>

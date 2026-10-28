@@ -7,6 +7,7 @@ class AdminController {
         if (!str_contains($uri, '/admin/login') && !is_admin()) {
             redirect('/admin/login');
         }
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') require_csrf(is_admin() ? '/admin/dashboard' : '/admin/login');
     }
 
     public function login(): void {
@@ -20,7 +21,7 @@ class AdminController {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
-        $user = DB::fetch("SELECT * FROM users WHERE email = :email AND role = 'admin'", ['email' => $email]);
+        $user = DB::fetch("SELECT * FROM users WHERE email = :email AND role = 'admin' AND is_active = 1", ['email' => $email]);
         if (!$user || !password_verify($password, $user['password_hash'])) {
             set_flash('error', 'Invalid administrator credentials.');
             redirect('/admin/login');
@@ -137,6 +138,14 @@ class AdminController {
         $isActive    = !empty($_POST['is_active']) ? 1 : 0;
 
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $nameEn)));
+
+        if ($nameEn === '' || trim($slug, '-') === '' || !is_numeric($_POST['price'] ?? '') || !is_finite($price) || $price < 0 ||
+            ($salePrice !== null && (!is_finite($salePrice) || $salePrice < 0)) || $stock < 0 || $threshold < 0 ||
+            filter_var($_POST['stock_quantity'] ?? 0, FILTER_VALIDATE_INT) === false ||
+            filter_var($_POST['low_stock_threshold'] ?? 5, FILTER_VALIDATE_INT) === false) {
+            set_flash('error', 'Enter a product name and non-negative prices, stock, and low-stock threshold. Stock must use whole packs.');
+            redirect($id ? '/admin/products/edit?id=' . $id : '/admin/products/create');
+        }
 
         // Handle image upload
         $image = $_POST['existing_image'] ?? 'harvest.png';
@@ -256,10 +265,18 @@ class AdminController {
         $changeQty = (int)($_POST['change_quantity'] ?? 0);
         $reason    = trim($_POST['reason'] ?? 'manual_restock');
 
-        if ($productId > 0 && $changeQty != 0) {
-            $prod = DB::fetch("SELECT stock_quantity FROM products WHERE id = :id", ['id' => $productId]);
+        if ($productId < 1 || $changeQty === 0 || filter_var($_POST['change_quantity'] ?? '', FILTER_VALIDATE_INT) === false) {
+            set_flash('error', 'Choose a product and enter a non-zero whole pack adjustment.');
+            redirect('/admin/inventory');
+        }
+
+        $pdo = DB::connect();
+        try {
+            $pdo->beginTransaction();
+            $prod = DB::fetch("SELECT stock_quantity FROM products WHERE id = :id FOR UPDATE", ['id' => $productId]);
             if ($prod) {
-                $newBalance = max(0, $prod['stock_quantity'] + $changeQty);
+                $newBalance = $prod['stock_quantity'] + $changeQty;
+                if ($newBalance < 0) throw new RuntimeException('Stock cannot be negative.');
                 DB::update('products', ['stock_quantity' => $newBalance], 'id = :id', ['id' => $productId]);
                 DB::insert('stock_log', [
                     'product_id'   => $productId,
@@ -269,8 +286,13 @@ class AdminController {
                     'reference_id' => 'ADMIN-ADJUST',
                     'created_by'   => auth_user()['name'] ?? 'admin'
                 ]);
-                set_flash('success', 'Inventory adjusted.');
             }
+            $pdo->commit();
+            if (!empty($prod)) set_flash('success', 'Inventory adjusted.');
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            error_log((string)$e);
+            set_flash('error', 'Adjustment not saved. Check quantity; stock cannot be negative.');
         }
 
         redirect('/admin/inventory');
@@ -315,30 +337,40 @@ class AdminController {
         $status = $_POST['status'] ?? '';
 
         $valid = ['pending', 'processing', 'out_for_delivery', 'delivered', 'cancelled'];
-        if (in_array($status, $valid)) {
-            $order = DB::fetch("SELECT * FROM orders WHERE id = :id", ['id' => $id]);
-            if ($order) {
-                // If moving to cancelled, restore stock per FR-11!
-                if ($status === 'cancelled' && $order['status'] !== 'cancelled') {
-                    $items = DB::fetchAll("SELECT * FROM order_items WHERE order_id = :oid", ['oid' => $id]);
-                    foreach ($items as $it) {
-                        DB::query("UPDATE products SET stock_quantity = stock_quantity + :qty WHERE id = :pid", [
-                            'qty' => $it['quantity'],
-                            'pid' => $it['product_id']
-                        ]);
-                        DB::insert('stock_log', [
-                            'product_id'   => $it['product_id'],
-                            'change_qty'   => $it['quantity'],
-                            'balance_qty'  => (int)(DB::fetch("SELECT stock_quantity FROM products WHERE id = :id", ['id' => $it['product_id']])['stock_quantity'] ?? 0),
-                            'reason'       => 'order_cancelled',
-                            'reference_id' => $order['order_number'],
-                            'created_by'   => 'admin'
-                        ]);
+        $pdo = DB::connect();
+        try {
+            $pdo->beginTransaction();
+            if (in_array($status, $valid, true)) {
+                $order = DB::fetch("SELECT * FROM orders WHERE id = :id FOR UPDATE", ['id' => $id]);
+                if ($order) {
+                    if ($order['status'] === 'cancelled' && $status !== 'cancelled') throw new RuntimeException('Cancelled orders cannot reopen.');
+                    // If moving to cancelled, restore stock per FR-11!
+                    if ($status === 'cancelled' && $order['status'] !== 'cancelled') {
+                        $items = DB::fetchAll("SELECT * FROM order_items WHERE order_id = :oid", ['oid' => $id]);
+                        foreach ($items as $it) {
+                            DB::query("UPDATE products SET stock_quantity = stock_quantity + :qty WHERE id = :pid", [
+                                'qty' => $it['quantity'],
+                                'pid' => $it['product_id']
+                            ]);
+                            DB::insert('stock_log', [
+                                'product_id'   => $it['product_id'],
+                                'change_qty'   => $it['quantity'],
+                                'balance_qty'  => (int)(DB::fetch("SELECT stock_quantity FROM products WHERE id = :id", ['id' => $it['product_id']])['stock_quantity'] ?? 0),
+                                'reason'       => 'order_cancelled',
+                                'reference_id' => $order['order_number'],
+                                'created_by'   => 'admin'
+                            ]);
+                        }
                     }
+                    DB::update('orders', ['status' => $status], 'id = :id', ['id' => $id]);
                 }
-                DB::update('orders', ['status' => $status], 'id = :id', ['id' => $id]);
-                set_flash('success', 'Order status updated to ' . ucfirst(str_replace('_', ' ', $status)) . '.');
             }
+            $pdo->commit();
+            if (isset($order) && $order) set_flash('success', 'Order status updated to ' . ucfirst(str_replace('_', ' ', $status)) . '.');
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            error_log((string)$e);
+            set_flash('error', 'Status not changed. Cancelled orders cannot reopen; create a new order instead.');
         }
 
         redirect('/admin/orders/view?id=' . $id);
@@ -391,14 +423,38 @@ class AdminController {
         ], 'admin');
     }
 
+    public function wholesaleApplicationDetail(): void {
+        $app = DB::fetch('SELECT * FROM wholesale_accounts WHERE id = :id', ['id' => (int)($_GET['id'] ?? 0)]);
+        if (!$app) {
+            set_flash('error', 'Wholesale application not found.');
+            redirect('/admin/wholesale');
+        }
+        render_view('admin/wholesale_application', [
+            'application' => $app,
+            'tiers' => DB::fetchAll('SELECT * FROM pricing_tiers ORDER BY discount_percent ASC'),
+            'title' => 'Review Wholesale Application'
+        ], 'admin');
+    }
+
     public function wholesaleApplicationAction(): void {
         $appId  = (int)($_POST['app_id'] ?? 0);
-        $action = $_POST['action'] ?? 'approve';
-        $tierId = (int)($_POST['tier_id'] ?? 1);
+        $action = $_POST['action'] ?? '';
+        $tierId = (int)($_POST['tier_id'] ?? 0);
         $notes  = trim($_POST['notes'] ?? '');
 
-        $app = DB::fetch("SELECT * FROM wholesale_accounts WHERE id = :id", ['id' => $appId]);
-        if ($app) {
+        if (!in_array($action, ['approve', 'reject'], true) ||
+            ($action === 'approve' && !DB::fetch('SELECT id FROM pricing_tiers WHERE id = :id', ['id' => $tierId]))) {
+            set_flash('error', 'Choose a valid action and pricing tier.');
+            redirect('/admin/wholesale');
+        }
+
+        $pdo = DB::connect();
+        try {
+            $pdo->beginTransaction();
+            $app = DB::fetch("SELECT * FROM wholesale_accounts WHERE id = :id FOR UPDATE", ['id' => $appId]);
+            if (!$app) throw new RuntimeException('Application not found.');
+            $user = DB::fetch('SELECT id, role FROM users WHERE id = :id', ['id' => $app['user_id']]);
+            if (!$user || $user['role'] === 'admin') throw new RuntimeException('Invalid applicant account.');
             if ($action === 'approve') {
                 DB::update('wholesale_accounts', [
                     'status'      => 'approved',
@@ -409,14 +465,19 @@ class AdminController {
 
                 // Update user role to wholesale
                 DB::update('users', ['role' => 'wholesale'], 'id = :id', ['id' => $app['user_id']]);
-                set_flash('success', 'Wholesale application approved with tier assigned.');
             } else {
                 DB::update('wholesale_accounts', [
                     'status'      => 'rejected',
                     'admin_notes' => $notes
                 ], 'id = :id', ['id' => $appId]);
-                set_flash('error', 'Wholesale application rejected.');
+                DB::update('users', ['role' => 'customer'], 'id = :id', ['id' => $app['user_id']]);
             }
+            $pdo->commit();
+            set_flash('success', $action === 'approve' ? 'Wholesale account approved with tier assigned.' : 'Wholesale application rejected.');
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            error_log((string)$e);
+            set_flash('error', 'Application update failed. Please try again.');
         }
 
         redirect('/admin/wholesale');
@@ -424,7 +485,9 @@ class AdminController {
 
     public function pricingTiers(): void {
         $tiers = DB::fetchAll("SELECT * FROM pricing_tiers ORDER BY discount_percent ASC");
-        render_view('admin/pricing_tiers', ['tiers' => $tiers, 'title' => 'B2B Pricing Tiers'], 'admin');
+        $editTier = null;
+        foreach ($tiers as $tier) if ($tier['id'] === (int)($_GET['id'] ?? 0)) $editTier = $tier;
+        render_view('admin/pricing_tiers', ['tiers' => $tiers, 'editTier' => $editTier, 'title' => 'B2B Pricing Tiers'], 'admin');
     }
 
     public function pricingTierSave(): void {
@@ -434,6 +497,11 @@ class AdminController {
         $discount = (float)($_POST['discount_percent'] ?? 0);
         $minSpend = (float)($_POST['min_spend'] ?? 0);
         $desc     = trim($_POST['description'] ?? '');
+
+        if ($name === '' || $code === '' || !is_numeric($_POST['discount_percent'] ?? '') || !is_finite($discount) || $discount < 0 || $discount > 100 || !is_finite($minSpend) || $minSpend < 0) {
+            set_flash('error', 'Provide a name, code, discount from 0 to 100, and non-negative minimum spend.');
+            redirect('/admin/wholesale/tiers');
+        }
 
         $data = [
             'name'             => $name,
@@ -483,6 +551,12 @@ class AdminController {
         $val      = (float)($_POST['discount_value'] ?? 0);
         $minSpend = (float)($_POST['min_order_amount'] ?? 0);
         $maxUses  = !empty($_POST['max_uses']) ? (int)$_POST['max_uses'] : null;
+
+        if ($code === '' || !in_array($type, ['percentage', 'fixed'], true) || !is_finite($val) || $val <= 0 ||
+            ($type === 'percentage' && $val > 100) || !is_finite($minSpend) || $minSpend < 0 || ($maxUses !== null && $maxUses < 1)) {
+            set_flash('error', 'Enter a code and positive discount. Percentage discounts cannot exceed 100; minimum spend cannot be negative.');
+            redirect('/admin/promotions');
+        }
 
         $data = [
             'code'             => $code,
@@ -631,7 +705,9 @@ class AdminController {
             "SELECT p.name_en, SUM(oi.quantity) as total_qty, SUM(oi.subtotal) as total_revenue
              FROM order_items oi
              JOIN products p ON oi.product_id = p.id
-             GROUP BY oi.product_id
+             JOIN orders o ON oi.order_id = o.id
+             WHERE o.status != 'cancelled'
+             GROUP BY p.id, p.name_en
              ORDER BY total_qty DESC
              LIMIT 10"
         );
@@ -686,10 +762,43 @@ class AdminController {
 
     public function settingsSave(): void {
         $settings = $_POST['settings'] ?? [];
-        foreach ($settings as $key => $val) {
-            DB::update('settings', ['setting_value' => trim($val)], 'setting_key = :k', ['k' => $key]);
+        if (!is_array($settings) || !$settings) {
+            set_flash('error', 'No settings supplied. Reload the form and try again.');
+            redirect('/admin/settings');
         }
-        set_flash('success', 'Global settings updated successfully.');
+        $allowedKeys = ['store_name', 'flat_shipping_fee', 'contact_email', 'contact_phone', 'contact_whatsapp', 'enabled_payment_methods'];
+        foreach ($settings as $key => $value) {
+            if (!in_array($key, $allowedKeys, true) || !is_string($value) || trim($value) === '') {
+                set_flash('error', 'Settings not saved. Complete all fields with valid values.');
+                redirect('/admin/settings');
+            }
+            $value = trim($value);
+            $invalid = match ($key) {
+                'flat_shipping_fee' => !is_numeric($value) || !is_finite((float)$value) || (float)$value < 0,
+                'contact_email' => !filter_var($value, FILTER_VALIDATE_EMAIL),
+                'contact_phone', 'contact_whatsapp' => !preg_match('/^\+?[\d\s().-]+$/', $value) || strlen(preg_replace('/\D/', '', $value)) < 7 || strlen(preg_replace('/\D/', '', $value)) > 15,
+                'enabled_payment_methods' => (bool)array_diff(array_map('trim', explode(',', $value)), ['fpx', 'card', 'grabpay', 'tng', 'cod']),
+                default => false,
+            };
+            if ($invalid) {
+                set_flash('error', 'Settings not saved. Check ' . str_replace('_', ' ', $key) . ' and try again.');
+                redirect('/admin/settings');
+            }
+            $settings[$key] = $key === 'enabled_payment_methods' ? implode(',', array_unique(array_map('trim', explode(',', $value)))) : $value;
+        }
+        $pdo = DB::connect();
+        try {
+            $pdo->beginTransaction();
+            foreach ($settings as $key => $val) {
+                DB::update('settings', ['setting_value' => $val], 'setting_key = :k', ['k' => $key]);
+            }
+            $pdo->commit();
+            set_flash('success', 'Global settings updated successfully.');
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            error_log((string)$e);
+            set_flash('error', 'Settings could not be saved. Please try again.');
+        }
         redirect('/admin/settings');
     }
 }

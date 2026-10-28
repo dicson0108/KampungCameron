@@ -9,7 +9,7 @@
     <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px;">
         <!-- Left: Categories Table -->
         <div class="admin-card">
-            <table class="admin-table">
+            <div class="admin-table-scroll" role="region" aria-label="Categories data table" tabindex="0"><table class="admin-table">
                 <thead>
                     <tr>
                         <th>Category Name</th>
@@ -28,7 +28,7 @@
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
-            </table>
+            </table></div>
         </div>
 
         <!-- Right: Add / Edit Form -->
@@ -38,18 +38,18 @@
                 <?= csrf_field() ?>
 
                 <div class="form-group">
-                    <label class="form-label">Category Name (EN) *</label>
-                    <input type="text" name="name_en" class="form-input" placeholder="e.g. Fresh Herbs" required>
+                    <label class="form-label" for="categories-name_en">Category Name (EN) *</label>
+                    <input id="categories-name_en" type="text" name="name_en" class="form-input" placeholder="e.g. Fresh Herbs" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Category Name (中文) *</label>
-                    <input type="text" name="name_zh" class="form-input" placeholder="e.g. 新鲜香草" required>
+                    <label class="form-label" for="categories-name_zh">Category Name (中文) *</label>
+                    <input id="categories-name_zh" type="text" name="name_zh" class="form-input" placeholder="e.g. 新鲜香草" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Sort Order</label>
-                    <input type="number" name="sort_order" class="form-input" value="10">
+                    <label class="form-label" for="categories-sort_order">Sort Order</label>
+                    <input id="categories-sort_order" type="number" name="sort_order" class="form-input" value="10">
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">Save Category</button>

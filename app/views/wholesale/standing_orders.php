@@ -16,7 +16,7 @@
         </div>
     <?php else: ?>
         <div style="background: var(--surface-white); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+            <div class="portal-table-scroll" role="region" aria-label="Standing Orders" tabindex="0"><table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
                 <thead>
                     <tr style="background: var(--warm-paper); border-bottom: 1px solid var(--border-color);">
                         <th style="padding: 14px 20px;">Schedule Name</th>
@@ -51,7 +51,7 @@
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
-            </table>
+            </table></div>
         </div>
     <?php endif; ?>
 </div>

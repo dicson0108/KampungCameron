@@ -102,27 +102,15 @@
                 <section style="background: var(--surface-white); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 32px;">
                     <h2 style="font-size: 24px; margin-bottom: 16px;"><?= __('payment_method', 'Payment method') ?></h2>
 
+                    <?php $paymentMethods = get_checkout_payment_methods(); ?>
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-                        <label style="display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
-                            <input type="radio" name="payment_method" value="fpx" checked>
-                            <strong>FPX online banking</strong>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
-                            <input type="radio" name="payment_method" value="card">
-                            <span>Credit / debit card — Visa, Mastercard</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
-                            <input type="radio" name="payment_method" value="grabpay">
-                            <span>GrabPay</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
-                            <input type="radio" name="payment_method" value="tng">
-                            <span>Touch ’n Go eWallet</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
-                            <input type="radio" name="payment_method" value="cod">
-                            <span>Cash on delivery</span>
-                        </label>
+                        <?php foreach ($paymentMethods as $code => $label): ?>
+                            <label style="display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                                <input type="radio" name="payment_method" value="<?= e($code) ?>" <?= $code === array_key_first($paymentMethods) ? 'checked' : '' ?> required>
+                                <span><?= e($label) ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                        <?php if (!$paymentMethods): ?><p role="status">Payment options are currently unavailable. Please contact the store before ordering.</p><?php endif; ?>
                     </div>
 
                     <!-- Payment note per Section 5.2 / Section 11 -->

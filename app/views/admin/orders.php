@@ -17,7 +17,7 @@
     </div>
 
     <div class="admin-card">
-        <table class="admin-table">
+        <div class="admin-table-scroll" role="region" aria-label="Orders data table" tabindex="0"><table class="admin-table">
             <thead>
                 <tr>
                     <th>Order #</th>
@@ -59,6 +59,6 @@
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>

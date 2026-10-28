@@ -104,7 +104,7 @@
             <h3>Recent Orders</h3>
             <a href="<?= url('/admin/orders') ?>" style="font-size: 13px; font-weight: 600; color: var(--primary-green);">View all orders →</a>
         </div>
-        <table class="admin-table">
+        <div class="admin-table-scroll" role="region" aria-label="Dashboard data table" tabindex="0"><table class="admin-table">
             <thead>
                 <tr>
                     <th>Recent order</th>
@@ -131,6 +131,6 @@
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>

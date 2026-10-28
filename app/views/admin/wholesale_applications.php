@@ -11,7 +11,7 @@
     </div>
 
     <div class="admin-card">
-        <table class="admin-table">
+        <div class="admin-table-scroll" role="region" aria-label="Wholesale Applications data table" tabindex="0"><table class="admin-table">
             <thead>
                 <tr>
                     <th>Business Name</th>
@@ -27,7 +27,7 @@
                 <?php foreach ($applications as $app): ?>
                     <tr>
                         <td style="font-weight: 600;">
-                            <div><?= htmlspecialchars($app['business_name']) ?></div>
+                            <div><a href="<?= url('/admin/wholesale/application?id=' . (int)$app['id']) ?>"><?= htmlspecialchars($app['business_name']) ?></a></div>
                             <div style="font-size: 12px; color: var(--admin-text-muted);"><?= htmlspecialchars($app['business_type']) ?></div>
                         </td>
                         <td><code><?= htmlspecialchars($app['registration_number']) ?></code></td>
@@ -53,7 +53,7 @@
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="app_id" value="<?= $app['id'] ?>">
 
-                                <select name="tier_id" class="form-select" style="width: auto; padding: 4px 8px; font-size: 12px;">
+                                <select name="tier_id" aria-label="Pricing tier for <?= e($app['business_name']) ?>" class="form-select" style="width: auto; padding: 4px 8px; font-size: 12px;">
                                     <?php foreach ($tiers as $t): ?>
                                         <option value="<?= $t['id'] ?>" <?= ($app['tier_id'] ?? 1) == $t['id'] ? 'selected' : '' ?>>
                                             <?= htmlspecialchars($t['name']) ?> (<?= (int)$t['discount_percent'] ?>%)
@@ -63,15 +63,16 @@
 
                                 <?php if ($app['status'] === 'pending'): ?>
                                     <button type="submit" name="action" value="approve" class="btn btn-primary" style="padding: 4px 10px; font-size: 12px;">Approve</button>
-                                    <button type="submit" name="action" value="reject" class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px; color: #ef4444;">Reject</button>
+                                    <button type="submit" name="action" value="reject" class="btn btn-secondary" onclick="return confirm('Reject this wholesale application?')" style="padding: 4px 8px; font-size: 12px; color: #b42318;">Reject</button>
                                 <?php else: ?>
-                                    <button type="submit" name="action" value="approve" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">Update Tier</button>
+                                    <button type="submit" name="action" value="approve" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;"><?= $app['status'] === 'approved' ? 'Update Tier' : 'Approve Account' ?></button>
                                 <?php endif; ?>
                             </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
+                <?php if (!$applications): ?><tr><td colspan="7">No wholesale applications yet.</td></tr><?php endif; ?>
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>
