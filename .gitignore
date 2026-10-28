@@ -1,0 +1,12 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment and sensitive files
+.env
+*.log
+
+# Web Server & Cache
+/public/uploads/*
+!/public/uploads/.gitkeep

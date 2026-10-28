@@ -1,0 +1,344 @@
+/* Admin Back-Office Stylesheet
+   Apple macOS & iOS-Inspired Design Language
+*/
+
+:root {
+  --admin-sidebar-bg: #143e53;
+  --admin-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --admin-sidebar-active: #256045;
+  --admin-main-bg: #faf8f5;
+  --admin-border: rgba(0, 0, 0, 0.08);
+  --admin-text-dark: #1d1d1f;
+  --admin-text-muted: #6e6e73;
+
+
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.06), 0 16px 36px rgba(0, 0, 0, 0.04);
+}
+
+body.admin-body {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--admin-main-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "DM Sans", "Noto Sans SC", sans-serif;
+  color: var(--admin-text-dark);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Sidebar with macOS Depth */
+.admin-sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, var(--admin-sidebar-bg) 0%, #0d2c3c 100%);
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  min-height: 100vh;
+  padding: 24px 0;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
+}
+
+.admin-brand {
+  padding: 0 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-brand h2 {
+  font-family: 'Lora', serif;
+  color: #ffffff;
+  font-size: 22px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.admin-brand span {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-weight: 700;
+}
+
+.admin-nav {
+  list-style: none;
+  padding: 18px 14px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.admin-nav-item {
+  margin-bottom: 4px;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: #e2e8f0;
+  letter-spacing: -0.01em;
+  transition: all 0.16s var(--ease-apple);
+}
+
+.admin-nav-link:hover {
+  background-color: var(--admin-sidebar-hover);
+  color: #ffffff;
+}
+
+.admin-nav-link:active {
+  transform: scale(0.98);
+}
+
+.admin-nav-link.active {
+  background-color: var(--admin-sidebar-active);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.admin-sidebar-footer {
+  padding: 18px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0.85;
+}
+
+.admin-sidebar-footer a:hover {
+  text-decoration: underline;
+}
+
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Translucent Apple Topbar */
+.admin-topbar {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--admin-border);
+  padding: 14px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.admin-breadcrumb {
+  color: var(--admin-text-muted);
+}
+
+.admin-breadcrumb strong {
+  color: var(--admin-text-dark);
+}
+
+.admin-content {
+  padding: 32px;
+  flex: 1;
+}
+
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.admin-page-title {
+  font-size: 32px;
+  font-family: 'Lora', serif;
+  letter-spacing: -0.02em;
+}
+
+/* Apple iOS Widget-Style KPI Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-md);
+  padding: 22px;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s var(--ease-apple), box-shadow 0.2s var(--ease-apple);
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: var(--admin-text-muted);
+  font-weight: 500;
+  margin-bottom: 8px;
+  letter-spacing: -0.005em;
+}
+
+.kpi-value {
+  font-family: 'Lora', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--admin-text-dark);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.kpi-sub {
+  font-size: 12px;
+  color: var(--primary-green);
+  font-weight: 600;
+}
+
+/* Low Stock Alert Strip */
+.low-stock-strip {
+  background-color: var(--primary-green-light);
+  border: 1px solid rgba(37, 96, 69, 0.16);
+  border-radius: var(--radius-md);
+  padding: 14px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-green-dark);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Apple Grouped Data Tables */
+.admin-card {
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-card);
+}
+
+.admin-card-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--admin-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-card-header h3 {
+  font-size: 18px;
+  font-family: 'Lora', serif;
+  letter-spacing: -0.015em;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  text-align: left;
+}
+
+.admin-table th {
+  background-color: #faf9f6;
+  padding: 14px 22px;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+  border-bottom: 1px solid var(--admin-border);
+  font-size: 13px;
+  letter-spacing: -0.005em;
+}
+
+.admin-table td {
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--admin-border);
+  vertical-align: middle;
+  transition: background-color 0.1s ease;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tr:hover td {
+  background-color: rgba(37, 96, 69, 0.03);
+}
+
+/* Apple Interactive Pill Bar Chart */
+.chart-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  height: 220px;
+  padding: 24px;
+}
+
+.chart-bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.chart-bar-val {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--admin-text-muted);
+}
+
+.chart-bar {
+  width: 100%;
+  max-width: 52px;
+  background: linear-gradient(180deg, var(--primary-green) 0%, var(--admin-sidebar-bg) 100%);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: height 0.4s var(--ease-apple), opacity 0.15s ease;
+  box-shadow: 0 2px 8px rgba(37, 96, 69, 0.2);
+}
+
+.chart-bar:hover {
+  opacity: 0.88;
+}
+
+.chart-bar-label {
+  font-size: 12px;
+  color: var(--admin-text-muted);
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  body.admin-body {
+    flex-direction: column;
+  }
+  .admin-sidebar {
+    width: 100%;
+    min-height: auto;
+  }
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
